@@ -6,7 +6,7 @@
     header("Location: ../home");
   }
 
-  $username = $_SESSION['id'];
+  $username = $_SESSION['username'];
   $sql = "SELECT * from users where username = '$username'";
   $result = mysqli_query($conn, $sql);
   $row = mysqli_fetch_assoc($result); // FETCH DATAS FROM THE WHOLE ROW 
@@ -44,7 +44,7 @@
           <a class="nav-link" href="#">About Us</a>
         </li>
 
-        <button class="btn btn-primary" onclick="location.href='../utilities/logout.php'">Log Out</button>
+        <button class="btn btn-primary" onclick="location.href='../utilities/_logout.php'">Log Out</button>
       </ul>
     </div>
   </div>
@@ -60,7 +60,7 @@
   
   <div>
     <img style="width: 10%" src="https://imgs.search.brave.com/LZWMwMYighRobOnIxKjwvfkpEhzakLjzUY4-2MccZM4/rs:fit:860:880:1/g:ce/aHR0cHM6Ly93d3cu/a2luZHBuZy5jb20v/cGljYy9tLzI0LTI0/ODcyOV9zdG9ja3Zh/ZGVyLXByZWRpY3Rl/ZC1hZGlnLXVzZXIt/cHJvZmlsZS1pbWFn/ZS1wbmctdHJhbnNw/YXJlbnQucG5n" alt="">
-    <p> USERNAME:  <?php echo $_SESSION['id'].'    '; if ($verDisplay == True) {echo '<img style="width: 18px"src="https://miro.medium.com/max/800/1*fFUnF8o4URvCowXSacCgGA.jpeg">';} ?> </p>
+    <p> USERNAME:  <?php echo $_SESSION['username'].'    '; if ($verDisplay == True) {echo '<img style="width: 18px"src="https://miro.medium.com/max/800/1*fFUnF8o4URvCowXSacCgGA.jpeg">';} ?> </p>
     <p> EMAIL:  <?php echo $_SESSION['email'];  ?> </p>
   </div>
 

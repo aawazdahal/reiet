@@ -1,4 +1,11 @@
 <?php
+    if ( $_SERVER['REQUEST_METHOD']=='GET' && realpath(__FILE__) == realpath( $_SERVER['SCRIPT_FILENAME'] ) ) {
+        header('location: ./index.php');
+    }
+?>
+
+
+<?php
     include "/xampp/htdocs/reliet/utilities/_db.php";
 
     $myJson = $_REQUEST['q']; // RETRIVE JSON DATA FROM JAVASCRIPT FILE
@@ -12,7 +19,6 @@
     $mysql = "SELECT * from users where username = '$username'";
 
     $mySqlExe = mysqli_query($conn, $mysql);
-
     $result = mysqli_fetch_assoc($mySqlExe);
 
     $currentPass = $result['password'];
@@ -29,5 +35,4 @@
             echo 3;
         }
     }
-
 ?>

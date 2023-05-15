@@ -1,122 +1,265 @@
 <?php
-    include "../utilities/db.php";
-    $idchkalert = False;
-    if($_SERVER['REQUEST_METHOD'] == 'POST') {
-      $username = $_POST['username'];
-      $email = $_POST['email'];
-      $pass = $_POST['pass'];
-                                
-      $idchk = "SELECT * from users where username = '$username'";
-      $result = mysqli_query($conn, $idchk);
-      $num = mysqli_num_rows($result);
-      
-      if ($num == 1) {
-        $idchkalert = "There is already an account with this username";
+    session_start();
+
+    if ($_SESSION['loggedIn'] == True) {
+        header("Location: ../home");
       }
-      else{
-        $sql = "INSERT INTO users (username, email, password) VALUES ('$username','$email','$pass')";
-        if (mysqli_query($conn, $sql)) {
-          session_start();
-          $_SESSION['loggedIn'] = True;
-          $_SESSION['id'] = $username;
-          header("Location: ../home");
-        } 
-        mysqli_close($conn);
-      }    
-    }
 ?>
 
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Sign Up To Reliet</title>
-    <link rel="shortcut icon" href="https://imgs.search.brave.com/-JgpzW-wYPgg_5qwmXTPRu5M0ftRossmu6LUgZlRwi4/rs:fit:800:800:1/g:ce/aHR0cDovL3d3dy5j/bGlwYXJ0YmVzdC5j/b20vY2xpcGFydHMv/ZWlNL2s5ci9laU1r/OXJheVQuanBn" type="image/x-webp">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
-  </head>
-  <body>
-  <nav class="navbar navbar-expand-lg bg-dark navbar-dark">
-    <div class="container-fluid">
-    <a class="navbar-brand" href="home.php">RELIET</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="../home">Home</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">About Us</a>
-        </li>
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Categories
-          </a>
-          <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="#">Technology</a></li>
-            <li><a class="dropdown-item" href="#">Sports</a></li> 
-          </ul>
-        </li>
-        <button class="btn btn-primary" onclick="location.href='../login'">Log In</button>
-      </ul>
-    </div>
-</div>
-</nav>
-<?php if ($idchkalert) { echo '<div class="alert alert-warning alert-dismissible fade show" role="alert">
-  
-  <strong>'.$idchkalert.'</strong>
-</div>';} ?>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
 
-    <!---- ALERT IS HERE -->
-    <div id="alertBox" style="display:none" class="alert alert-warning alert-dismissible fade show" role="alert">
-      <strong id="alertText"></strong>
-    </div>
+        .container{
+            background-color: whitesmoke;
+            width: 100%;
+            height: 661px;
+            display: flex;
+        }
+
+        .desc-div{
+            width: 50%;   
+        }
+        .form-div{
+            width: 50%; 
+        }
+
+        .desc-place{  
+            width: 100%;
+            margin-top: 220px;
+        }
+
+        .desc-place-inside{ 
+            width: 70%;
+            margin-left: auto;
+            margin-right: 0;
+        }
+
+        .desc-place-title{
+            font-size: 50px;
+            text-align: left;
+        }
+        .desc-place-para{
+            font-size: 25px;
+            text-align: left;
+        }
+
+        .form-place{
+            width: 100%;   
+            height: 360px;
+            margin-top: 135px;
+        }
+
+        .form-place-inside{
+            height: 400px;
+            background-color: white;
+            border-radius: 5px;
+            width: 350px;
+            box-shadow: 12px;
+            margin-right: auto;
+            margin-left: 100px;
+        }
+
+        form{
+            display: flex;
+            flex-direction: column;
+        }
+
+        input{
+            width: 85%;
+            height: 40px;
+            border: solid rgb(179, 176, 176) 1px;
+            border-radius: 5px;
+            margin-left: 5%;
+            margin-right: 5%;
+            padding-left: 12px;
+            font-size: 18px;
+        }
+
+        .signUpBtn{
+            width: 80%;
+            height: 40px;
+            border: none;
+            border-radius: 5px;
+            margin-left: 10%;
+            margin-right: 10%;
+            background-color: rgb(190, 69, 238);
+            font-size: 20px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .signUpBtn:disabled {
+            background-color: rgb(212, 145, 241);
+            cursor: auto;
+        }
+
+        button:hover{
+            cursor: pointer;
+        }
+
+        p {
+            font-family: Verdana;
+        }
+        h2 {
+            color: rgb(172, 44, 172);
+            font-size: 10px;
+        }
+
+        .userError {
+            display: none;
+            color: red;
+            margin-left: 6%;
+            margin-top: 1%;
+            font-weight: bold;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        #passError {
+            display: none;
+            color: red;
+            margin-left: 6%;
+            margin-top: 1%;
+            font-weight: bold;
+            font-family: Arial, Helvetica, sans-serif;    
+        }
+
+        @media screen and (max-width: 950px) {
+            .container {
+                flex-direction: column;
+            }
     
-
-    <h1>Sign Up</h1>
-    <form class="d-flex" name="signUpForm" onsubmit="return validateForm()" style="flex-direction: column" method="POST" action="index.php">
-        <input type="text" required="required" id="username" class="username" name="username" placeholder="Username"><br>
-        <input type="email" required="required" id="email" class="email" name="email" placeholder="Email address"><br>
-        <input type="password" required="required" id="passs" class="pass" name="pass" placeholder="Password"><br>
-        <input type="password" required="required" id="cpass" class="pass" name="cpass" placeholder="Re-enter password"><br>
-        <button class="btn btn-primary" type="submit">Sign Up</button>
-    </form>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.min.js" integrity="sha384-7VPbUDkoPSGFnVtYi0QogXtr74QeVeeIs99Qfg5YCF+TidwNdjvaKZX19NZ/e6oz" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8" crossorigin="anonymous"></script>
-  </body>
+            p{
+                display: none;
+            }
+            .desc-place{
+                margin-top: 12px;
+            }
+            .form-place{
+                margin-top: 12px;
+            }
+            .desc-div{
+                width: 100%;
+            }
+            .desc-place-inside {
+                margin-left: auto;
+                margin-right: auto;
+            }
+            .desc-place-title {
+                text-align: center;
+            }
+            .form-div{
+                width: 100%;
+            }
+            .form-place-inside {
+                margin-left: auto;
+                margin-right: auto;
+            }
+        }
+    </style>
+    <title>Sign up to reliet</title>
+</head>
+<body>
+    <div class="container">
+        <div class="desc-div">
+            <div class="desc-place">
+                <div class="desc-place-inside">
+                    <h2 class="desc-place-title">Create a new account</h2>
+                    <p class="desc-place-para">Sign up on Reliet & start sharing your ideas</p>
+                </div>
+            </div>
+        </div>
+        <div class="form-div">
+            <div class="form-place">
+                <div class="form-place-inside">
+                    
+                        <br><br>
+                        <input type="text, email" name="username" id="username" placeholder="Username">
+                        <span class="userError" id="userError">Username is already taken</span>
+                        <br><br>
+                        <input type="text, email"  name="email" id="email" required placeholder="Email address">
+                        <br>
+                        <br>
+                        <input type="password" name="pass" id="pass" placeholder="Password">
+                        <br><br>
+                        <input type="password" name="rPass" id="rPass" placeholder="Confirm Password">
+                        <span id="passError">Recheck the password</span>
+                        <br><br>
+                        <button class="signUpBtn" id="signUpBtn">Sign Up</button>
+                                    
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
 </html>
 
 <script>
-  function validateForm() {
-    var returnVal = true;
+document.getElementById('signUpBtn').onclick = signUpProcess;
 
-    var username = document.forms['signUpForm']['username'].value;
-    var password = document.forms['signUpForm']['pass'].value;
-    var cpassword = document.forms['signUpForm']['cpass'].value;
+document.getElementById('pass').addEventListener('click', function() {
+    document.getElementById('pass').style.borderColor = "rgb(179, 176, 176)";
+}) 
 
-    var alertBox = document.getElementById('alertBox');
-    var alertText = document.getElementById('alertText');
-    var passwordBox = document.getElementsByClassName('pass');
+document.getElementById('rPass').addEventListener('click', function() {
+    document.getElementById('rPass').style.borderColor = "rgb(179, 176, 176)";
+}) 
+
+function signUpProcess() {
+    var user = document.getElementById('username').value;
+    var email = document.getElementById('email').value;
+    var pass = document.getElementById('pass').value;
+    var rPass = document.getElementById('rPass').value;
+
+    if (user = "" || pass=="" || rPass=="" || email=="") {
+        document.getElementById('passError').textContent = "There's a problem creating an account"
+        document.getElementById('passError').style.display = "block";
+    }
+    else if (user.length < 3) {
+        console.log(user);
+        document.getElementById('userError').textContent = "Username should be at least 3 characters long";
+        document.getElementById('userError').style.display = "block";
+    }
+    else if (pass != rPass) {
+        document.getElementById('passError').textContent = "Please re-confirm the password";
+        document.getElementById('passError').style.display = "block";
+        document.getElementById('pass').style.borderColor = "orange";
+        document.getElementById('rPass').style.borderColor = "orange";
+    }
+    else {     
+        var user = document.getElementById('username').value;
+        
+        var myData = {
+            username: user,
+            email: email,
+            password: pass
+        }
+
+        var myJson = JSON.stringify(myData);
+
+        const req = new XMLHttpRequest();
+
+        req.onload = function(){
+               if (this.responseText == 1) {
+                document.getElementById('userError').textContent = "Username is unavailable";
+                document.getElementById('userError').style.display = "block";
+               }
+               else if (this.responseText == 2) {
+                location.href='../home';
+               } 
+        }
     
-    if (username.length < 3) {
-      alertText.textContent = "Username should be at least 3 characters long";
-      alertBox.style.display = "block";
-      returnVal = false;
-    }
-    else if (password.length < 3) {
-      alertText.textContent = "Password should be at least 5 characters long";
-      alertBox.style.display = "block";
-      returnVal = false;
-    }
-    else if (password != cpassword) {
-      alertText.textContent = "Enter same password in both boxes";
-      alertBox.style.display = "block";
-      returnVal = false;
-    }
+        req.open('GET', '_signUpProcess.php?q=' + myJson, true);
 
-    return returnVal;
-  }
+        req.send();
+    
+    }
+}
 </script>
